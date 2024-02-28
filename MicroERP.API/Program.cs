@@ -1,4 +1,4 @@
-using APIMicroERP.Data;
+using MicroERP.API.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

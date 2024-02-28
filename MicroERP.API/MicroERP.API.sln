@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIMicroERP", "APIMicroERP.csproj", "{F8ED9E7C-21A5-49FE-B1CF-1D08A63AE4F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroERP.API", "MicroERP.API.csproj", "{F8ED9E7C-21A5-49FE-B1CF-1D08A63AE4F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelsDBMicroERP", "..\ModelsDBMicroERP\ModelsDBMicroERP.csproj", "{6CFB8184-577E-4568-8A05-E41B8EEFADC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroERP.ModelsDB", "..\MicroERP.ModelsDB\MicroERP.ModelsDB.csproj", "{6CFB8184-577E-4568-8A05-E41B8EEFADC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

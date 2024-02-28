@@ -1,0 +1,10 @@
+@MicroERP.API_HostAddress = https://localhost:7100
+
+GET {{MicroERP.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{MicroERP.API_HostAddress}}/api/partners
+
+###

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using MicroERP.API.Data;
+using MicroERP.ModelsDB.Models.MasterData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIMicroERP.Data;
-using ModelsDBMicroERP.Models;
 
-namespace APIMicroERP.Controllers
+namespace MicroERP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
