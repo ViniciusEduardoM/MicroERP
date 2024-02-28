@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelsDBMicroERP.Models
+namespace MicroERP.ModelsDB.Models
 {
     public class Enumerables
     {

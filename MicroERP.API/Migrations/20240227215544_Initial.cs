@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace APIMicroERP.Migrations
+namespace MicroERP.API.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

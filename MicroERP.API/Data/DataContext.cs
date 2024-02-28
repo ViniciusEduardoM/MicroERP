@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ModelsDBMicroERP.Models;
-using ModelsDBMicroERP.Models.Documents;
+using MicroERP.ModelsDB.Models.Documents;
+using MicroERP.ModelsDB.Models.MasterData;
 
-namespace APIMicroERP.Data
+namespace MicroERP.API.Data
 {
     public class DataContext : DbContext
     {

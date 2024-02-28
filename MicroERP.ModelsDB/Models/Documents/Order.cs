@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModelsDBMicroERP.Models.Documents
+namespace MicroERP.ModelsDB.Models.Documents
 {
     public class Order : Document<OrderLine>
     {
