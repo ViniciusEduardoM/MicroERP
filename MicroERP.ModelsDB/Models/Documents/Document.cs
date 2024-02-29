@@ -8,6 +8,7 @@ namespace MicroERP.ModelsDB.Models.Documents
     {
         public int Id { get; set; }
         public string Number { get; set; }
+
         [ForeignKey("PartnerId")]
         public virtual Partner Partner { get; set; }
         public virtual ICollection<TLine> DocumentLines { get; set; }

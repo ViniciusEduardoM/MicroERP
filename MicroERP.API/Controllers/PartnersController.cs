@@ -1,5 +1,7 @@
 ﻿using MicroERP.API.Data;
 using MicroERP.ModelsDB.Models.MasterData;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +9,7 @@ namespace MicroERP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PartnersController : ControllerBase
     {
         private readonly DataContext _context;

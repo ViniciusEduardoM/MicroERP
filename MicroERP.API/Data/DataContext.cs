@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MicroERP.ModelsDB.Models.Documents;
 using MicroERP.ModelsDB.Models.MasterData;
+using MicroERP.ModelsDB.Models.MasterData.Users;
 
 namespace MicroERP.API.Data
 {
@@ -22,6 +23,8 @@ namespace MicroERP.API.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Seller> Sellers { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
     }
 }
