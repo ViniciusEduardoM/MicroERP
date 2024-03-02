@@ -72,7 +72,7 @@ namespace MicroERP.API.Controllers
         private bool VerifyPasswordHash(string password, string dbPassword)
         {
 
-            if (CreatePasswordHash(password) == dbPassword)
+            return CreatePasswordHash(password) == dbPassword;
                 return true;
 
             else
