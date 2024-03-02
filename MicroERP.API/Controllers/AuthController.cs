@@ -32,7 +32,13 @@ namespace MicroERP.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<User>> Login(Login userLogin)
         {
-            bool userExists = _context.User.Any(e => e.Name == userLogin.Name) ? true : _context.User.Any(e => e.Email == userLogin.Name);
+            var user = _context.User.FirstOrDefault(e => e.Name == userLogin.Name || e.Email == userLogin.Name);
+
+            if (user == null)
+                return BadRequest("Usuário não existe");
+
+            if (VerifyPasswordHash(userLogin.Password, user.Password))
+                return Ok(CreateToken(user));
 
             if (!userExists)
                 return BadRequest("Usuário não existe");
