@@ -14,51 +14,59 @@ using System.Text;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using MicroERP.API.Models;
+using MicroERP.ModelsDB.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace MicroERP.API.Controllers
 {
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly DataContext _context;
+        private DataContext? _context = default;
         private readonly IConfiguration _configuration;
 
-        public AuthController(DataContext context, IConfiguration configuration)
+        public AuthController(IConfiguration configuration)
         {
-            _context = context;
             _configuration = configuration;
         }
 
         [HttpPost("Login")]
         public async Task<ActionResult<User>> Login(Login userLogin)
         {
-            var user = _context.User.FirstOrDefault(e => e.Name == userLogin.Name || e.Email == userLogin.Name);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState.ValidationState);
 
-            if (user == null)
-                return BadRequest("Usuário não existe");
+                _context = DbContextFactory.CreateWithCompany(userLogin.CompanyDB);                
+                
+                var user = _context.User.FirstOrDefault(e => e.Name == userLogin.UserName || e.Email == userLogin.UserName);
 
-            if (VerifyPasswordHash(userLogin.Password, user.Password))
-                return Ok(CreateToken(user));
+                if (user == null)
+                    return BadRequest("Usuário não existe");
 
-            if (!userExists)
-                return BadRequest("Usuário não existe");
+                if (VerifyPasswordHash(userLogin.Password, user.Password))
+                {
+                    var token = CreateToken(user, userLogin.CompanyDB);
+                    return Ok(new LoginResponse { Token = new JwtSecurityTokenHandler().WriteToken(token), ValidFrom = token.ValidFrom, ValidTo = token.ValidTo });
+                }               
 
-            User user = _context.User.First(e => e.Name == userLogin.Name) ?? _context.User.First(e => e.Email == userLogin.Name);            
-
-            if (VerifyPasswordHash(userLogin.Password, user.Password))
-                return Ok(CreateToken(user));
-
-            else
-                return Unauthorized("A senha está incorreta");
-            
+                else
+                    return Unauthorized("A senha está incorreta");
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, ex.InnerException?.Message, 400, "Um erro do servidor ocorreu");
+            }
         }
 
-        private string CreateToken(User user)
+        private JwtSecurityToken CreateToken(User user, string companyDB)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Role, user.Role.Name),
+                new Claim("CompanyDB", companyDB)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
@@ -67,23 +75,15 @@ namespace MicroERP.API.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(5),
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
+            return token;
         }
 
         private bool VerifyPasswordHash(string password, string dbPassword)
         {
-
             return CreatePasswordHash(password) == dbPassword;
-                return true;
-
-            else
-                return false;
-
         }
 
         private string CreatePasswordHash(string password)

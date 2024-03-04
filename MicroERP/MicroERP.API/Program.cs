@@ -56,10 +56,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+DbContextFactory.DefaultConnectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -68,7 +67,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseExceptionHandler("/error-development");
 }
+else
+    app.UseExceptionHandler("/error");
 
 app.UseHttpsRedirection();
 

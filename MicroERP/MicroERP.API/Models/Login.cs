@@ -6,7 +6,8 @@ namespace MicroERP.API.Models
 {
     public class Login
     {
-        public string Name { get; set; }
+        public string CompanyDB { get; set; }
+        public string UserName { get; set; }
         public string Password { get; set; }
     }
 }

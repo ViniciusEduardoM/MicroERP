@@ -1,6 +1,8 @@
 ﻿using MicroERP.ModelsDB.Models.MasterData;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
 namespace MicroERP.ModelsDB.Models.Documents
 {
@@ -12,6 +14,8 @@ namespace MicroERP.ModelsDB.Models.Documents
         [ForeignKey("PartnerId")]
         public virtual Partner Partner { get; set; }
         public virtual ICollection<TLine> DocumentLines { get; set; }
+
+        public string MakeRequest() => JsonConvert.SerializeObject(this);
     }
 
     public class DocumentLine
