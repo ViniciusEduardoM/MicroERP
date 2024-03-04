@@ -12,11 +12,11 @@ namespace MicroERP.API.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PartnersController : ControllerBase
     {
-        private readonly DataContext _context;
+        private DataContext _context;
 
-        public PartnersController(DataContext context)
+        public PartnersController()
         {
-            _context = context;
+            _context = DbContextFactory.CreateWithAuth(Request.Headers["Authorization"].SingleOrDefault());
         }
 
         // GET: api/Partners
