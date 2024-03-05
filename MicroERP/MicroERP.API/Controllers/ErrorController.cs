@@ -20,7 +20,7 @@ namespace MicroERP.API.Controllers
                 HttpContext.Features.Get<IExceptionHandlerFeature>()!;
 
             return Problem(
-                detail: exceptionHandlerFeature.Error.StackTrace,
+                detail: exceptionHandlerFeature.Error.InnerException?.Message,
                 title: exceptionHandlerFeature.Error.Message);
         }
         [ApiExplorerSettings(IgnoreApi = true)]
