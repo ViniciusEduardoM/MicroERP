@@ -95,9 +95,14 @@ namespace MicroERP.API.Controllers
             if (user == null)
                 return BadRequest("Usuário não existe");
 
-            string remetente = "E_MAIL_EMPRESA";
-            // string destinatario = BancoDeVariaveis.Email_do_usuario; para testes vou enviar para mim mesmo
-            string senha = "SENHA_EMAIL_EMPRESA";
+            string? emailEmpresa = Environment.GetEnvironmentVariable("EMAIL_EMPRESA");
+            string? senhaEmailEmpresa = Environment.GetEnvironmentVariable("SENHA_EMAIL_EMPRESA");
+
+            if (string.IsNullOrEmpty(emailEmpresa) || string.IsNullOrEmpty(senhaEmailEmpresa))
+                return StatusCode(500, "Erro interno, credenciais de email não cadastradas");
+
+            string remetente = emailEmpresa;
+            string senha = senhaEmailEmpresa;
             int porta = 587;
             string host = "smtp.gmail.com";
 

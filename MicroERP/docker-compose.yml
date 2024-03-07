@@ -2,10 +2,7 @@ version: '3.4'
 
 services:
   microerp.api:
-    image: ${DOCKER_REGISTRY-}microerpapi
-    environment:
-        EMAIL_EMPRESA: ""
-        SENHA_EMAIL_EMPRESA: ""
+    image: ${DOCKER_REGISTRY-}microerpapi        
     build:
       context: .
       dockerfile: MicroERP.API/Dockerfile
