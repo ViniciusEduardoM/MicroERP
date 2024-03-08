@@ -11,8 +11,10 @@ namespace MicroERP.ModelsDB.Models.MasterData.Users
 
         public string Password { get; set; }
 
+        public int? RoleId { get; set; }
+
         [ForeignKey("RoleId")]
-        public Role Role { get; set; }
+        public virtual Role Role { get; set; }
 
     }
 }

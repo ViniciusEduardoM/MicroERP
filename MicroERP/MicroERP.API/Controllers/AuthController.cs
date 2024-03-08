@@ -16,6 +16,10 @@ using System.Security.Cryptography;
 using MicroERP.API.Models;
 using MicroERP.ModelsDB.Models;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity.Data;
+using System.Net.Mail;
+using NuGet.Protocol.Plugins;
+using MicroERP.API.Models.InternalDBTables;
 
 namespace MicroERP.API.Controllers
 {
@@ -33,31 +37,144 @@ namespace MicroERP.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<User>> Login(Login userLogin)
         {
-            try
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ValidationState);
+
+            _context = DbContextFactory.CreateWithCompany(userLogin.CompanyDB);
+
+            var user = _context.User.FirstOrDefault(e => e.Name == userLogin.UserName || e.Email == userLogin.UserName);
+
+            if (user == null)
+                return BadRequest("Usuário não existe");
+
+            if (VerifyPasswordHash(userLogin.Password, user.Password))
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState.ValidationState);
-
-                _context = DbContextFactory.CreateWithCompany(userLogin.CompanyDB);                
-                
-                var user = _context.User.FirstOrDefault(e => e.Name == userLogin.UserName || e.Email == userLogin.UserName);
-
-                if (user == null)
-                    return BadRequest("Usuário não existe");
-
-                if (VerifyPasswordHash(userLogin.Password, user.Password))
-                {
-                    var token = CreateToken(user, userLogin.CompanyDB);
-                    return Ok(new LoginResponse { Token = new JwtSecurityTokenHandler().WriteToken(token), ValidFrom = token.ValidFrom, ValidTo = token.ValidTo });
-                }               
-
-                else
-                    return Unauthorized("A senha está incorreta");
+                var token = CreateToken(user, userLogin.CompanyDB);
+                return Ok(new LoginResponse { Token = new JwtSecurityTokenHandler().WriteToken(token), ValidFrom = token.ValidFrom, ValidTo = token.ValidTo });
             }
-            catch (Exception ex)
+
+            else
+                return Unauthorized("A senha está incorreta");
+        }
+
+        [HttpPost("Register")]
+        public async Task<ActionResult<string>> Register(Register registerRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ValidationState);
+
+            _context = DbContextFactory.CreateWithCompany(registerRequest.CompanyDB);
+
+            if (_context.User.Any(e => e.Name == registerRequest.UserName))
+                return BadRequest($"O usuário {registerRequest.UserName} já existe");
+
+            if (_context.User.Any(e => e.Email == registerRequest.Email))
+                return BadRequest($"O email {registerRequest.Email} já existe");
+
+            var user = await _context.User.AddAsync(new User
             {
-                return Problem(ex.Message, ex.InnerException?.Message, 400, "Um erro do servidor ocorreu");
-            }
+                Name = registerRequest.UserName,
+                Email = registerRequest.Email,
+                Password = CreatePasswordHash(registerRequest.Password),
+                RoleId = 1
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok($"Usuário {registerRequest.UserName} criado com sucesso!");
+        }
+
+        [HttpPost("RecoverPassword")]
+        public async Task<ActionResult<string>> RecoverPassword(RecoverPassword recover)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ValidationState);
+
+            _context = DbContextFactory.CreateWithCompany(recover.CompanyDB);
+
+            var user = _context.User.FirstOrDefault(e => e.Name == recover.UserName || e.Email == recover.UserName);
+
+            if (user == null)
+                return BadRequest("Usuário não existe");
+
+            string? emailEmpresa = Environment.GetEnvironmentVariable("EMAIL_EMPRESA");
+            string? senhaEmailEmpresa = Environment.GetEnvironmentVariable("SENHA_EMAIL_EMPRESA");
+
+            if (string.IsNullOrEmpty(emailEmpresa) || string.IsNullOrEmpty(senhaEmailEmpresa))
+                return StatusCode(500, "Erro interno, credenciais de email não cadastradas");
+
+            string remetente = emailEmpresa;
+            string senha = senhaEmailEmpresa;
+            int porta = 587;
+            string host = "smtp.gmail.com";
+
+            Random rnd = new Random();
+
+            int numCodigo = rnd.Next(100000, 999999);
+            string codigo = numCodigo.ToString();
+
+            string tema = "MicroERP - Código de recuperação de senha";
+            string corpo = "" +
+                "<h2 style=\"color: #2e6c80;\"><span style=\"color: #000000;\">Ol&aacute;!</span></h2>" +
+                "<p>Seu c&oacute;digo recuperação de senha no MicroERP &eacute;:</p>" +
+                "<h1><strong>" + codigo + "</strong></h1>" +
+                "<p>Insira esse c&oacute;digo no campo de confirmação de código</p>" +
+                "<h1><strong> Este código irá expirar em 30 minutos </strong></h1>";
+
+            MailMessage mail = new MailMessage();
+            mail.To.Add(recover.Email);
+            mail.From = new MailAddress(remetente);
+            mail.Subject = tema;
+            mail.Body = corpo;
+            mail.IsBodyHtml = true;
+            SmtpClient smtp = new SmtpClient(host, porta);
+            smtp.EnableSsl = true;
+            smtp.UseDefaultCredentials = false;
+            smtp.Credentials = new System.Net.NetworkCredential(remetente, senha);
+
+            smtp.Send(mail);
+
+            _context.PasswordRecovery.Add(new PasswordRecory
+            {
+                UserName = recover.UserName,
+                Email = recover.Email,
+                CodeRecovery = numCodigo,
+                Expiration = DateTime.UtcNow.AddMinutes(30)
+            });
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+
+
+        }
+
+        [HttpPost("RenewPassword")]
+        public async Task<ActionResult<string>> RecoverPassword(RenewPassword renewPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ValidationState);
+
+            _context = DbContextFactory.CreateWithCompany(renewPassword.CompanyDB);
+
+            var user = _context.User.FirstOrDefault(e => e.Name == renewPassword.UserName || e.Email == renewPassword.UserName);
+
+            if (user == null)
+                return BadRequest("Usuário não existe");
+
+            if (!_context.PasswordRecovery.Any(x => x.UserName == renewPassword.UserName && x.Expiration > DateTime.UtcNow))
+                return BadRequest("Código de recuperação inexistente ou expirado");
+
+            if (!_context.PasswordRecovery.Any(x => x.CodeRecovery == renewPassword.CodeRecovery && x.Expiration > DateTime.UtcNow))
+                return BadRequest("Código informado está incorreto");
+
+            user.Password = CreatePasswordHash(renewPassword.NewPassword);
+
+            _context.Update(user);
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Senha alterada com sucesso");
+
         }
 
         private JwtSecurityToken CreateToken(User user, string companyDB)
@@ -65,7 +182,7 @@ namespace MicroERP.API.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.Name),
+                new Claim(ClaimTypes.Role, _context.Roles.First(r => r.Id == user.RoleId).Name),
                 new Claim("CompanyDB", companyDB)
             };
 
@@ -100,6 +217,6 @@ namespace MicroERP.API.Controllers
                 }
                 return hex;
             }
-        }        
+        }
     }
 }
