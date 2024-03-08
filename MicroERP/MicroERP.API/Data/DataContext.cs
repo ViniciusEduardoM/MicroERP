@@ -29,7 +29,7 @@ namespace MicroERP.API.Data
         {
             modelBuilder.Entity<Order>().ToTable("Orders");
             modelBuilder.Entity<OrderLine>().HasKey(s => new { s.DocumentId, s.Line });
-
+            modelBuilder.Entity<PasswordRecory>().ToTable("PasswordRecory");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

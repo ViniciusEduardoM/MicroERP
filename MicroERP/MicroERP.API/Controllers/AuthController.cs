@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity.Data;
 using System.Net.Mail;
 using NuGet.Protocol.Plugins;
+using MicroERP.API.Models.InternalDBTables;
 
 namespace MicroERP.API.Controllers
 {
@@ -132,16 +133,17 @@ namespace MicroERP.API.Controllers
 
             smtp.Send(mail);
 
-            _context.PasswordRecovery.Add(new Models.InternalDBTables.PasswordRecory
+            _context.PasswordRecovery.Add(new PasswordRecory
             {
                 UserName = recover.UserName,
                 Email = recover.Email,
                 CodeRecovery = numCodigo,
                 Expiration = DateTime.UtcNow.AddMinutes(30)
             });
+
             await _context.SaveChangesAsync();
 
-            return Ok(numCodigo);
+            return NoContent();
 
 
         }
@@ -159,10 +161,10 @@ namespace MicroERP.API.Controllers
             if (user == null)
                 return BadRequest("Usuário não existe");
 
-            if (!_context.PasswordRecovery.Any(x => x.UserName == renewPassword.UserName && x.Expiration < DateTime.UtcNow))
+            if (!_context.PasswordRecovery.Any(x => x.UserName == renewPassword.UserName && x.Expiration > DateTime.UtcNow))
                 return BadRequest("Código de recuperação inexistente ou expirado");
 
-            if (!_context.PasswordRecovery.Any(x => x.CodeRecovery != renewPassword.CodeRecovery && x.Expiration < DateTime.UtcNow))
+            if (!_context.PasswordRecovery.Any(x => x.CodeRecovery == renewPassword.CodeRecovery && x.Expiration > DateTime.UtcNow))
                 return BadRequest("Código informado está incorreto");
 
             user.Password = CreatePasswordHash(renewPassword.NewPassword);
