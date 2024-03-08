@@ -175,6 +175,7 @@ namespace MicroERP.API.Controllers
 
             return Ok("Senha alterada com sucesso");
 
+
         }
 
         private JwtSecurityToken CreateToken(User user, string companyDB)
@@ -183,6 +184,7 @@ namespace MicroERP.API.Controllers
             {
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.Role, _context.Roles.First(r => r.Id == user.RoleId).Name),
+
                 new Claim("CompanyDB", companyDB)
             };
 

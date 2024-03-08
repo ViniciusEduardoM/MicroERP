@@ -49,6 +49,7 @@ namespace MicroERP.API.Migrations
                     b.ToTable("PasswordRecory", (string)null);
                 });
 
+
             modelBuilder.Entity("MicroERP.ModelsDB.Models.Documents.Order", b =>
                 {
                     b.Property<int>("Id")

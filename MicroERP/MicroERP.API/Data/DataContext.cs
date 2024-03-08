@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using MicroERP.API.Factory;
 using MicroERP.API.Models.InternalDBTables;
 
+
 namespace MicroERP.API.Data
 {
     public class DataContext : DbContext
@@ -35,6 +36,7 @@ namespace MicroERP.API.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
+
         }
 
         public DbSet<Partner> Partners { get;set; }
@@ -52,6 +54,7 @@ namespace MicroERP.API.Data
         internal static string DefaultConnectionString { get; set; } = string.Empty;
 
         internal static DataContext CreateWithAuth(string? token)
+
         {
             string connStr = DefaultConnectionString + $"Database={ReadJWTGetCompanyDB(token)};";
 
@@ -68,6 +71,7 @@ namespace MicroERP.API.Data
         }
 
         internal static DataContext CreateWithCompany(string? CompanyDB)
+
         {
             string connStr = DefaultConnectionString + $"Database={CompanyDB};";
 

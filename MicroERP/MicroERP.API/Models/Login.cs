@@ -34,4 +34,5 @@ namespace MicroERP.API.Models
         public string NewPassword { get; set; }
         public int CodeRecovery { get; set; }
     }
+
 }
