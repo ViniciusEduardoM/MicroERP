@@ -15,7 +15,7 @@ services:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: "dbPass1234"
     volumes:
-      - E:/DockerVolumes/mssql:/var/opt/mssql3
+      - mssql:/var/opt/mssql3
     ports:
       - '11433:1433'    
     expose:

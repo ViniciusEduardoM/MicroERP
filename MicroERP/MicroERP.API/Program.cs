@@ -1,6 +1,7 @@
-using MicroERP.API.Data;
+using MicroERP.API.Infra.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -57,6 +58,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 DbContextFactory.DefaultConnectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+
+//builder.Services.AddDbContext<DataContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
 
 builder.Services.AddProblemDetails();
 

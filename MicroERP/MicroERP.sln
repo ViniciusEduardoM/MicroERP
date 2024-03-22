@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroERP.ModelsDB", "MicroE
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{BA437A51-D972-425D-961C-F59A34D700B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMicroERP", "..\TestMicroERP\TestMicroERP.csproj", "{341A7E45-3A77-460F-9722-D21BF8EE1DCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BA437A51-D972-425D-961C-F59A34D700B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA437A51-D972-425D-961C-F59A34D700B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA437A51-D972-425D-961C-F59A34D700B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{341A7E45-3A77-460F-9722-D21BF8EE1DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{341A7E45-3A77-460F-9722-D21BF8EE1DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{341A7E45-3A77-460F-9722-D21BF8EE1DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{341A7E45-3A77-460F-9722-D21BF8EE1DCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

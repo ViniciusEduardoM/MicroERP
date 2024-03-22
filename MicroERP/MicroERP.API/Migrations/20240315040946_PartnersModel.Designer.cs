@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MicroERP.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307235615_PassForgot")]
-    partial class PassForgot
+    [Migration("20240315040946_PartnersModel")]
+    partial class PartnersModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -140,7 +140,109 @@ namespace MicroERP.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Partners");
+                    b.ToTable("Partners", (string)null);
+                });
+
+            modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.PartnerAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PartnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartnerId");
+
+                    b.ToTable("PartnerAddresses", (string)null);
+                });
+
+            modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.PartnerContact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PartnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartnerId");
+
+                    b.ToTable("PartnerContacts", (string)null);
                 });
 
             modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.Seller", b =>
@@ -230,6 +332,20 @@ namespace MicroERP.API.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.PartnerAddress", b =>
+                {
+                    b.HasOne("MicroERP.ModelsDB.Models.MasterData.Partner", null)
+                        .WithMany("PartnerAddresses")
+                        .HasForeignKey("PartnerId");
+                });
+
+            modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.PartnerContact", b =>
+                {
+                    b.HasOne("MicroERP.ModelsDB.Models.MasterData.Partner", null)
+                        .WithMany("PartnerContacts")
+                        .HasForeignKey("PartnerId");
+                });
+
             modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.Users.User", b =>
                 {
                     b.HasOne("MicroERP.ModelsDB.Models.MasterData.Users.Role", "Role")
@@ -242,6 +358,13 @@ namespace MicroERP.API.Migrations
             modelBuilder.Entity("MicroERP.ModelsDB.Models.Documents.Order", b =>
                 {
                     b.Navigation("DocumentLines");
+                });
+
+            modelBuilder.Entity("MicroERP.ModelsDB.Models.MasterData.Partner", b =>
+                {
+                    b.Navigation("PartnerAddresses");
+
+                    b.Navigation("PartnerContacts");
                 });
 #pragma warning restore 612, 618
         }
