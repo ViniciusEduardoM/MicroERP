@@ -9,6 +9,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+ENV	EMAIL_EMPRESA = ""
+ENV SENHA_EMAIL_EMPRESA = ""
 COPY ["MicroERP.API/MicroERP.API.csproj", "MicroERP.API/"]
 COPY ["MicroERP.ModelsDB/MicroERP.ModelsDB.csproj", "MicroERP.ModelsDB/"]
 RUN dotnet restore "./MicroERP.API/MicroERP.API.csproj"
