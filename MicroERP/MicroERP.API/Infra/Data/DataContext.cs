@@ -9,12 +9,11 @@ using Microsoft.Extensions.Options;
 using MicroERP.API.Factory;
 using MicroERP.API.Models.InternalDBTables;
 
-
-namespace MicroERP.API.Data
+namespace MicroERP.API.Infra.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base (options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
             bool dataBaseExists = (Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
 
@@ -31,21 +30,27 @@ namespace MicroERP.API.Data
             modelBuilder.Entity<Order>().ToTable("Orders");
             modelBuilder.Entity<OrderLine>().HasKey(s => new { s.DocumentId, s.Line });
             modelBuilder.Entity<PasswordRecory>().ToTable("PasswordRecory");
+
+            modelBuilder.Entity<Partner>().ToTable("Partners");
+            modelBuilder.Entity<PartnerAddress>().ToTable("PartnerAddresses");
+            modelBuilder.Entity<PartnerContact>().ToTable("PartnerContacts");
+            modelBuilder.Entity<PartnerAddress>().HasKey(s => new { s.Id });
+            modelBuilder.Entity<PartnerContact>().HasKey(s => new { s.Id });
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
-
         }
 
-        public DbSet<Partner> Partners { get;set; }
+        public DbSet<Partner> Partners { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Role> Roles { get; set; }            
-        public DbSet<PasswordRecory> PasswordRecovery { get;set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<PasswordRecory> PasswordRecovery { get; set; }
 
     }
 
@@ -54,9 +59,8 @@ namespace MicroERP.API.Data
         internal static string DefaultConnectionString { get; set; } = string.Empty;
 
         internal static DataContext CreateWithAuth(string? token)
-
         {
-            string connStr = DefaultConnectionString + $"Database={ReadJWTGetCompanyDB(token)};";
+            string connStr = DefaultConnectionString + $"Database={ReadJWTGetCompanyDB(token.Replace("Bearer ", ""))}";
 
             if (!string.IsNullOrEmpty(connStr))
             {
@@ -71,7 +75,6 @@ namespace MicroERP.API.Data
         }
 
         internal static DataContext CreateWithCompany(string? CompanyDB)
-
         {
             string connStr = DefaultConnectionString + $"Database={CompanyDB};";
 

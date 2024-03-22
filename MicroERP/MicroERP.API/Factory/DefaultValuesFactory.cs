@@ -1,4 +1,4 @@
-﻿using MicroERP.API.Data;
+﻿using MicroERP.API.Infra.Data;
 using MicroERP.ModelsDB.Models.MasterData.Users;
 
 namespace MicroERP.API.Factory

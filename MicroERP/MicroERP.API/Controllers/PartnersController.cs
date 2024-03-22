@@ -1,4 +1,4 @@
-﻿using MicroERP.API.Data;
+﻿using MicroERP.API.Infra.Data;
 using MicroERP.ModelsDB.Models.MasterData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +16,14 @@ namespace MicroERP.API.Controllers
 
         public PartnersController()
         {
-            _context = DbContextFactory.CreateWithAuth(Request.Headers["Authorization"].SingleOrDefault());
+            //_context = DbContextFactory.CreateWithAuth(Request.Headers["Authorization"].SingleOrDefault());
         }
 
         // GET: api/Partners
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Partner>>> GetPartners()
         {
+            _context = DbContextFactory.CreateWithAuth(Request.Headers["Authorization"].SingleOrDefault());
             return await _context.Partners.ToListAsync();
         }
 
@@ -76,6 +77,8 @@ namespace MicroERP.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Partner>> PostPartner(Partner partner)
         {
+            _context = DbContextFactory.CreateWithAuth(Request.Headers["Authorization"].SingleOrDefault());
+
             _context.Partners.Add(partner);
             await _context.SaveChangesAsync();
 
